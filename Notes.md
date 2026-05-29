@@ -10,3 +10,33 @@ Property editing complete. Verified via DOM inspection that
 all Text fields (fontSize, lineHeight, color, fontWeight, margin) flow from
 Puck data through the bridge to the actual rendered <p> element with correct
 inline styles. Container nesting also verified, however it seems that padding cannot be seen visually easily.
+
+Follow up for the last update: the initial preview implementation triggered a React
+"Multiple renderers concurrently rendering the same context provider" error
+on every preview update, caused by mounting Puck's <Render> component inside
+@react-email/render's static renderer (two renderers contending over Puck's
+context provider).
+
+I fixed this issue by walking the Puck Data tree directly in the preview, where each entry
+calls emailConfig.components[type].render(props) and slot arrays are wrapped
+into recursive SlotComponents that re-enter the same walker.
+
+The Bridge invariant still holds, that components are still defined exactly once in
+emailConfig; the preview just invokes those definitions via a different code
+path than the editor does. Two assumptions documented in code: none of the
+current block renders read puck.\* or id; if a future block does, the inert
+PuckContext stub will need actual values. The second assumption is that the walker treats array-valued props as slot content, which is true given the current field types but would
+need revisiting if a non-slot array field were ever added.
+
+Next step complete, completing Tier 1. Resend send flow added with shared render
+path: extracted the walker from preview.tsx into render-email.tsx, exported
+renderEmailHtml() consumed by both preview and the new POST /api/send route.
+Bridge invariant extends from architecture to operational code: there is one
+function that turns Puck data into email HTML, used by both views.
+
+Validation runs before the Resend call (JSON parse, type checks, email
+regex, env var presence) so malformed requests can't burn API quota.
+Resend's error.message is returned to the client and rendered in
+the red error state.
+
+Send button state machine: idle / sending / sent / error, auto-reset to idle 4s after success. Recipient and subject persist across attempts. Then I tested this, and a real send to verified inbox succeeded; malformed address triggered 400 validation correctly, and the sent email matched.

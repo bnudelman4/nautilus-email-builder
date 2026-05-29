@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { emailConfig, type EmailBlocks } from "@/email/blocks";
 import { EmailPreview } from "@/email/preview";
+import { SendPanel } from "@/email/send-panel";
 
 const initialData: Data<EmailBlocks> = {
   content: [],
@@ -28,8 +29,18 @@ export default function Home() {
           onPublish={setData}
         />
       </div>
-      <div style={{ overflow: "hidden", backgroundColor: "#f3f4f6" }}>
-        <EmailPreview data={data} />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          backgroundColor: "#f3f4f6",
+        }}
+      >
+        <SendPanel data={data} />
+        <div style={{ flex: 1, overflow: "hidden" }}>
+          <EmailPreview data={data} />
+        </div>
       </div>
     </div>
   );
