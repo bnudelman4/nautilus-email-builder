@@ -5,3 +5,8 @@ Update: after implementing the Text block, the design remained the same. The sin
 All six React Email components are now registered as Puck blocks. The nesting was verified and every component was tested. Bridge invariant holds across all six: each
 component defined exactly once in its config entry's render, field values
 forwarded directly to React Email components with no translation layer. As an extra step, I removed default dark-mode CSS to keep editor canvas consistently light to improve visual quality.
+
+Property editing complete. Verified via DOM inspection that
+all Text fields (fontSize, lineHeight, color, fontWeight, margin) flow from
+Puck data through the bridge to the actual rendered <p> element with correct
+inline styles. Container nesting also verified, however it seems that padding cannot be seen visually easily.
