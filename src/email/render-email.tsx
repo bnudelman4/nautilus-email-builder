@@ -17,6 +17,24 @@ export type SendSuccess = { id: string };
 export type SendFailure = { error: string };
 export type SendResponse = SendSuccess | SendFailure;
 
+// Scheduling wire contract, co-located so client and server share one source.
+export type ScheduleRequest = SendRequest & { sendAt: string };
+export type ScheduleSuccess = { workflowId: string };
+export type ScheduleResponse = ScheduleSuccess | SendFailure;
+
+export type CancelRequest = { workflowId: string };
+export type CancelSuccess = { cancelled: true };
+export type CancelResponse = CancelSuccess | SendFailure;
+
+export type ScheduledEmail = {
+  workflowId: string;
+  to: string;
+  subject: string;
+  sendAt: string;
+};
+export type ListSuccess = { scheduled: ScheduledEmail[] };
+export type ListResponse = ListSuccess | SendFailure;
+
 // None of the six block render() functions read `puck` or `id`, but
 // PuckComponent's signature requires them. Supplying inert values lets us call
 // the SAME render functions directly, without mounting Puck's <Render> (which

@@ -40,3 +40,33 @@ Resend's error.message is returned to the client and rendered in
 the red error state.
 
 Send button state machine: idle / sending / sent / error, auto-reset to idle 4s after success. Recipient and subject persist across attempts. Then I tested this, and a real send to verified inbox succeeded; malformed address triggered 400 validation correctly, and the sent email matched.
+
+Update: scheduling fully implemented with Temporal.
+
+Architecture:
+Workflow imports only @temporalio/workflow runtime plus type-only imports. Sleeps via Temporal's cancellation-aware sleep(); CancelledFailure propagates so Temporal records cancelled workflows as Canceled (not Completed), while still guaranteeing the send activity is never reached when cancellation fires during sleep.
+
+Activitydelegates to the shared sendRenderedEmail helper, so scheduled and immediate sends go through the exact same render and Resend path.
+
+Worker runs as a separate process. Uses tsx to handle JSX in the render chain.
+
+Schedule route validates everything before using Temporal, stores user-facing fields in
+workflow memo so the list route can render rows without fetching input.
+
+Cancel uses workflow.cancel() (not terminate) to trigger the workflow's
+CancelledFailure path, ensuring no email is sent.
+
+Tradeoff: Temporal visibility query has eventual consistency, which is fine for a demo but in production I'd shadow scheduled emails to the app's own database for the UI listing.
+
+Testing done locally:
+Scheduled 2min ahead, email arrived on time, workflow completed in Web UI.
+Cancelled before fire, no email sent, workflow status = Canceled, event history shows no ActivityTaskScheduled (sendEmail was never reached).
+Datetime picker prevents past times in the UI; API also returns 400 if a past sendAt is sent directly.
+
+Cancellation changes: initial implementation caught CancelledFailure in
+the workflow and returned a string, which Temporal interpreted as normal
+completion and recorded the status as Completed. Functional guarantee was
+correct (no email sent) but the status display was technically semantically wrong.
+Changed to let CancelledFailure propagate so Temporal records cancelled
+workflows as Canceled. Verified by re-running the cancel test and checking
+the Web UI.
