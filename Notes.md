@@ -70,3 +70,8 @@ correct (no email sent) but the status display was technically semantically wron
 Changed to let CancelledFailure propagate so Temporal records cancelled
 workflows as Canceled. Verified by re-running the cancel test and checking
 the Web UI.
+
+Tier 2 complete: Desktop/mobile preview toggle added to preview pane,
+600px (email content-width standard) vs 375px (representative phone width),
+applied as max-width on a centered wrapper around the iframe. Rendering
+path was not changed. PreviewMode is a literal union, widths stored in a typed Record so future modes are a one-line addition.
