@@ -75,3 +75,16 @@ Tier 2 complete: Desktop/mobile preview toggle added to preview pane,
 600px (email content-width standard) vs 375px (representative phone width),
 applied as max-width on a centered wrapper around the iframe. Rendering
 path was not changed. PreviewMode is a literal union, widths stored in a typed Record so future modes are a one-line addition.
+
+Tier 3 portion complete complete. Starter template library added: Welcome,
+Newsletter, Promo, each a typed EmailData value built only from the existing
+block types. Templates load by replacing the Puck data state through the
+existing setter (loadData to setData), preserving the single-state invariant
+from the bridge architecture. window.confirm gate only fires when the canvas
+has content. Blank button resets to the initial empty EmailData.
+
+Template-load bug found and fixed during testing: Puck holds internal data
+state and reads its `data` prop only on initial mount, so calling setData
+from a template button updated the preview pane but not the editor canvas.
+Fixed with a remount counter passed as the `key` prop to <Puck>, incremented
+only inside loadData (not in onChange). Remount only fires on explicit canvas replacement.
