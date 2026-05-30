@@ -88,3 +88,5 @@ state and reads its `data` prop only on initial mount, so calling setData
 from a template button updated the preview pane but not the editor canvas.
 Fixed with a remount counter passed as the `key` prop to <Puck>, incremented
 only inside loadData (not in onChange). Remount only fires on explicit canvas replacement.
+
+Another portion of Tier 3 complete: Undo/redo. I used what already existed, I confirmed Puck provides this natively via createHistorySlice with Cmd+Z / Cmd+Shift+Z / Cmd+Y hotkeys registered unconditionally on the <Puck> component. No code was needed to be added and this was tested manually in browser by editing blocks, undoing, redoing, and undoing deletions.
