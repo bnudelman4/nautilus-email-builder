@@ -90,3 +90,14 @@ Fixed with a remount counter passed as the `key` prop to <Puck>, incremented
 only inside loadData (not in onChange). Remount only fires on explicit canvas replacement.
 
 Another portion of Tier 3 complete: Undo/redo. I used what already existed, I confirmed Puck provides this natively via createHistorySlice with Cmd+Z / Cmd+Shift+Z / Cmd+Y hotkeys registered unconditionally on the <Puck> component. No code was needed to be added and this was tested manually in browser by editing blocks, undoing, redoing, and undoing deletions.
+
+Cleanup pass was done. Codebase audit found minimal issues: no unused
+imports, no any types, no @ts-ignore or @ts-expect-error comments, no debug
+console statements. npm run build and npm run lint both were clean.
+
+Mixed async patterns (try/catch in handlers, .then/.catch in useEffect
+mounts) intentionally retained.
+
+Two unused exports in render-email.tsx (CancelRequest type,
+buildEmailTree function) deliberately retained for shared-module API
+stability; the cost of removing and potentially re-adding outweighs the cost of carrying them.
